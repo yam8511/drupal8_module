@@ -1,0 +1,17 @@
+zoular.description:
+  title: Zoular Module
+  description: Some function in the module
+  route_name: zoular.my_controller_description
+
+zoular.seek:
+  title: 查看下屬
+  description: Look what belongs to myself
+  route_name: zoular.my_controller_seek
+  parent: zoular.description
+
+zoular.rate_form:
+  title: 設定賠率
+  description: Setting Rate
+  route_name: zoular.rate_form
+  parent: zoular.description
+

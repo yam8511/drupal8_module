@@ -1,0 +1,14 @@
+{
+  "name": "drupal/zoular",
+  "type": "drupal-module",
+  "description": "Zoular Project Module",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/zoular",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/zoular",
+    "source": "http://cgit.drupalcode.org/zoular"
+  },
+  "require": { }
+}

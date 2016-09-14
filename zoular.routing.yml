@@ -1,0 +1,31 @@
+zoular.my_controller_hello:
+  path: '/zoular/hello/{name}'
+  defaults:
+    _controller: '\Drupal\zoular\Controller\MyController::hello'
+    _title: 'My Controller'
+  requirements:
+    _permission: 'access content'
+
+zoular.my_controller_description:
+  path: '/zoular/description'
+  defaults:
+    _controller: '\Drupal\zoular\Controller\MyController::description'
+    _title: 'My Controller Description'
+  requirements:
+    _permission: 'access content'
+
+zoular.my_controller_seek:
+  path: '/zoular/seek'
+  defaults:
+    _controller: '\Drupal\zoular\Controller\MyController::seek'
+    _title: '查看下屬'
+  requirements:
+    _permission: 'access content'
+
+zoular.rate_form:
+  path: 'zoular.rate_form'
+  defaults:
+    _form: '\Drupal\zoular\Form\RateForm'
+    _title: '設定賠率'
+  requirements:
+    _access: 'TRUE'

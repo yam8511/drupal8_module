@@ -1,0 +1,5 @@
+name: zoular
+type: module
+description: Zoular Project Module
+core: 8.x
+package: Custom
