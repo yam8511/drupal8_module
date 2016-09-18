@@ -22,6 +22,14 @@ zoular.my_controller_seek:
   requirements:
     _permission: 'access content'
 
+zoular.my_controller_lookfor:
+  path: '/zoular/lookfor/{uid}'
+  defaults:
+    _controller: '\Drupal\zoular\Controller\MyController::lookfor'
+    _title: '查看下屬'
+  requirements:
+    _permission: 'access content'
+
 zoular.rate_form:
   path: 'zoular.rate_form'
   defaults:

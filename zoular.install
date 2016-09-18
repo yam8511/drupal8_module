@@ -55,6 +55,12 @@ function zoular_schema() {
         'not null' => TRUE,
         'default' => '0',
         'description' => 'Small Bat',
+      ),
+      'state' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => '0',
+        'description' => 'State',
       )
     ),
     'primary key' => array('uid'),

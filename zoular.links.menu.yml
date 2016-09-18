@@ -14,4 +14,4 @@ zoular.rate_form:
   description: Setting Rate
   route_name: zoular.rate_form
   parent: zoular.description
-
+  

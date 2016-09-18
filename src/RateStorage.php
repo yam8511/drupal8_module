@@ -110,10 +110,7 @@ class RateStorage {
     $result = RateStorage::getData($id);
 
     if (!$result) {
-      $father = RelationStorage::father($id);
-      if ($father) {
-        $result = RateStorage::getRate($father);
-      }
+      $result = RateStorage::getFatherRate($id);
     }
 
     return $result;
@@ -130,7 +127,7 @@ class RateStorage {
   /**
    * Get Data where uid=$id 
    */
-  private static function getData($id) {
+  public static function getData($id) {
     $select = db_select('zoular_rate', 'example');
     $select->fields('example');
     $select->condition('uid', $id);

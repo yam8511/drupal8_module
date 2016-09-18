@@ -106,4 +106,16 @@ class RelationStorage {
     return $result->up;
   }
 
+  public static function getName($id) {
+    if (!$id) {
+      return null;
+    }
+
+    $table = db_select('users_field_data', 'example');
+    $table->fields('example');
+    $table->condition('uid', $id);
+    $result = $table->execute()->fetch();
+    return $result->name;
+  }
+
 }
