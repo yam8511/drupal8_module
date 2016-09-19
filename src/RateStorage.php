@@ -151,4 +151,13 @@ class RateStorage {
   }
 
 
+  public static function belongsTo($id) {
+
+  }
+
+  public static function hasMany($id) {
+
+  }
+
+
 }

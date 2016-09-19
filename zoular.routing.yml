@@ -10,9 +10,9 @@ zoular.my_controller_description:
   path: '/zoular/description'
   defaults:
     _controller: '\Drupal\zoular\Controller\MyController::description'
-    _title: 'My Controller Description'
+    _title: '賠率限額'
   requirements:
-    _permission: 'access content'
+    _permission: 'look_rate'
 
 zoular.my_controller_seek:
   path: '/zoular/seek'
@@ -20,7 +20,7 @@ zoular.my_controller_seek:
     _controller: '\Drupal\zoular\Controller\MyController::seek'
     _title: '查看下屬'
   requirements:
-    _permission: 'access content'
+    _permission: 'look_below'
 
 zoular.my_controller_lookfor:
   path: '/zoular/lookfor/{uid}'
@@ -28,12 +28,20 @@ zoular.my_controller_lookfor:
     _controller: '\Drupal\zoular\Controller\MyController::lookfor'
     _title: '查看下屬'
   requirements:
-    _permission: 'access content'
+    _permission: 'look_below'
 
 zoular.rate_form:
-  path: 'zoular.rate_form'
+  path: 'zoular/rate_form'
   defaults:
     _form: '\Drupal\zoular\Form\RateForm'
     _title: '設定賠率'
   requirements:
-    _access: 'TRUE'
+    _permission: 'setting_rate'
+
+zoular.rate_below_form:
+  path: 'zoular/rate_below_form/{uid}'
+  defaults:
+    _form: '\Drupal\zoular\Form\EditBelowForm'
+    _title: '設定賠率'
+  requirements:
+    _permission: 'setting_rate'

@@ -45,41 +45,12 @@ class RelationStorage {
     return $return_value;
   }
 
-  /**
-   * Delete an entry from the database.
-   *
-   * @param array $entry
-   *   An array containing at least the person identifier 'uid' element of the
-   *   entry to delete.
-   *
-   * @see db_delete()
-   */
   public static function delete($entry) {
     db_delete('zoular_relation')
         ->condition('uid', $entry['uid'])
         ->execute();
   }
 
-  /**
-   * Read from the database using a filter array.
-   *
-   * The standard function to perform reads was db_query(), and for static
-   * queries, it still is.
-   *
-   * db_query() used an SQL query with placeholders and arguments as parameters.
-   *
-   * @param array $entry
-   *   An array containing all the fields used to search the entries in the
-   *   table.
-   *
-   * @return object
-   *   An object containing the loaded entries if found.
-   *
-   * @see db_select()
-   * @see db_query()
-   * @see http://drupal.org/node/310072
-   * @see http://drupal.org/node/310075
-   */
   public static function load($entry = array()) {
     // Read all fields from the zoular_relation table.
     $select = db_select('zoular_relation', 'example');
@@ -116,6 +87,23 @@ class RelationStorage {
     $table->condition('uid', $id);
     $result = $table->execute()->fetch();
     return $result->name;
+  }
+
+  public static function isUpper($id, $parent_id) {
+    // Look for Upper
+    $table = db_select('zoular_relation', 'example');
+    $table->fields('example');
+    $table->condition('uid', $id);
+    $result = $table->execute()->fetch();
+    if (!$result) {
+      return false;
+    }
+
+    if ($result->up != $parent_id) {
+      return RelationStorage::isUpper($result->up, $parent_id);
+    } else {
+      return true;
+    }
   }
 
 }

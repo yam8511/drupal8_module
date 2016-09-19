@@ -12,7 +12,7 @@ use Drupal\zoular\RelationStorage;
  *
  * @package Drupal\zoular\Form
  */
-class RateForm extends FormBase {
+class EditBelowForm extends FormBase {
 
 
   /**
@@ -26,11 +26,10 @@ class RateForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
+  	$uid = $_GET['uid'];
     $info = ['bg' => 0, 'sg' => 0, 'bb' => 0, 'sb' => 0];
     #嘗試取得資料庫資料
-    $user = $this->currentUser();
-    $result = RateStorage::getRate($user->id());
+    $result = RateStorage::getRate($uid);
     if ($result) {
       $info['bg'] = $result->bg;
       $info['sg'] = $result->sg;
@@ -38,8 +37,13 @@ class RateForm extends FormBase {
       $info['sb'] = $result->sb;
     }
 
-    $father_rate = RateStorage::getFatherRate($user->id());
+    $father_rate = RateStorage::getFatherRate($uid);
     $max = 999999999;
+
+    $form['uid'] = [
+    	 '#type' => 'hidden',
+    	 'value' => $uid,
+    ];
 
     $form['bg'] = [
       '#type' => 'number',
@@ -100,11 +104,11 @@ class RateForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Gather the current user so the new record has ownership.
-    $account = $this->currentUser();
+    $uid = $form_state->getValue('uid');
     if ($form_state->getValue('op') === 'Save') {
       // Save the submitted entry.
       $entry = array(
-        'uid' => $account->id(),
+        'uid' => $uid,
         'name' => $account->getUsername(),
         'bg' => $form_state->getValue('bg'),
         'sg' => $form_state->getValue('sg'),
@@ -116,7 +120,7 @@ class RateForm extends FormBase {
       drupal_set_message(t('修改成功'));
     }
     elseif ($form_state->getValue('op') === 'Syn') {
-      $belows = RelationStorage::load(['up' => $account->id()]);
+      $belows = RelationStorage::load(['up' => $uid]);
       foreach ($belows as $below) {
         RateStorage::delete(['uid' => $below->uid]);
       }

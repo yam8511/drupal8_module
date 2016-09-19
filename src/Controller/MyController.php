@@ -6,6 +6,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\zoular\RateStorage;
 use Drupal\zoular\RelationStorage;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class MyController.
@@ -33,10 +35,32 @@ class MyController extends ControllerBase {
    *   Return Description string
    */
   public function description() {
-    return [
-      '#type' => 'markup',
-      '#markup' => $this->t('This is my module for user and rate setting.'),
-    ];
+    $content = array();
+    $user = $this->currentUser();
+
+    $content['message'] = array(
+      '#markup' => $user->getUsername().$this->t(' :查看賠率限額'),
+    );
+
+    $rows = array();
+    $headers = array(t('單場大賠率'), t('單場小賠率'), t('單注大賠率'), t('單注小賠率'));
+    $rates = RateStorage::getRate($user->id());
+    $rows[0][0] = $rates->bg;
+    $rows[0][1] = $rates->sg;
+    $rows[0][2] = $rates->bb;
+    $rows[0][3] = $rates->sb;
+
+
+    $content['table'] = array(
+      '#type' => 'table',
+      '#header' => $headers,
+      '#rows' => $rows,
+      '#empty' => t('目前沒有下屬會員'),
+    );
+    // Don't cache this page.
+    $content['#cache']['max-age'] = 0;
+
+    return $content;
   }
 
   /**
@@ -45,77 +69,73 @@ class MyController extends ControllerBase {
    *   Return Seek string
    */
   public function seek() {
-    $content = array();
     $user = $this->currentUser();
-
-    $content['message'] = array(
-      '#markup' => $user->getUsername().$this->t(' :查看自己層級以下的帳戶'),
-    );
-
-    $rows = array();
-    $headers = array(t('name'), t('單場大賠率'), t('單場小賠率'), t('單注大賠率'), t('單注小賠率'));
-    $result = RelationStorage::load(['up' => $user->id()]);
-    
-    foreach ($result as $i => $account) {
-      $rates = RateStorage::getRate($account->uid);
-      $name = RelationStorage::getName($account->uid);
-      $rows[$i][0] = Link::createFromRoute($name, 'zoular.my_controller_lookfor', ['uid' => $account->uid])->toString();
-      $rows[$i][1] = $rates->bg;
-      $rows[$i][2] = $rates->sg;
-      $rows[$i][3] = $rates->bb;
-      $rows[$i][4] = $rates->sb;
-    }
-
-
-    $content['table'] = array(
-      '#type' => 'table',
-      '#header' => $headers,
-      '#rows' => $rows,
-      '#empty' => t('目前沒有下屬會員'),
-    );
-    // Don't cache this page.
-    $content['#cache']['max-age'] = 0;
-
-    return $content;
+    return $this->getBelowView($user->id());
   }
 
   /**
    * Look for
    * @return string
-   *   Return Seek string
+   *   Return Look for string
    */
   public function lookfor($uid) {
-    $content = array();
-    $user = RateStorage::getData($uid);
+    $user = $this->currentUser();
+    if (!RelationStorage::isUpper($uid, $user->id())) {
+      $link = Url::fromRoute('zoular.my_controller_seek')->toString();
+      return RedirectResponse::create($link);
+    }
 
+    return $this->getBelowView($uid);
+  }
+
+  private function getBelowView($uid) {
+    $username = RelationStorage::getName($uid);
+    $user = $this->currentUser();
+    if ($uid != $user->id()) {
+      $father = RelationStorage::father($uid);
+
+      if ($father != $user->id())
+        $username = Link::createFromRoute($username, 'zoular.my_controller_lookfor', ['uid' => $father])->toString();
+      else
+        $username = Link::createFromRoute($username, 'zoular.my_controller_seek')->toString();
+    }
+
+    $content = array();
     $content['message'] = array(
-      '#markup' => $user->name.$this->t(' :查看自己層級以下的帳戶'),
+      '#markup' => $username.$this->t(' :查看自己層級以下的帳戶'),
     );
 
-    $rows = array();
-    $headers = array(t('name'), t('單場大賠率'), t('單場小賠率'), t('單注大賠率'), t('單注小賠率'));
-    $result = RelationStorage::load(['up' => $user->uid]);
-
-    foreach ($result as $i => $account) {
-      $rates = RateStorage::getRate($account->uid);
-      $name = RelationStorage::getName($account->uid);
-      $rows[$i][0] = Link::createFromRoute($name, 'zoular.my_controller_lookfor', ['uid' => $account->uid])->toString();
-      $rows[$i][1] = $rates->bg;
-      $rows[$i][2] = $rates->sg;
-      $rows[$i][3] = $rates->bb;
-      $rows[$i][4] = $rates->sb;
-    }
-    
     $content['table'] = array(
       '#type' => 'table',
-      '#header' => $headers,
-      '#rows' => $rows,
+      '#header' => array(t('name'), t('單場大賠率'), t('單場小賠率'), t('單注大賠率'), t('單注小賠率'), t('設定賠率')),
+      '#rows' => $this->getBelowRate($uid),
       '#empty' => t('目前沒有下屬會員'),
     );
     // Don't cache this page.
     $content['#cache']['max-age'] = 0;
-
     return $content;
+  }
+
+  private function getBelowRate($uid) {
+    $rows = [];
+    $result = RelationStorage::load(['up' => $uid]);
+    foreach ($result as $i => $account) {
+      $rows[$i] = $this->getPersonRate($account->uid);
+    }
+    return $rows;
+  }
+
+  private function getPersonRate($uid) {
+    $rows = [];
+    $rates = RateStorage::getRate($uid);
+    $name = RelationStorage::getName($uid);
+    $rows[0] = Link::createFromRoute($name, 'zoular.my_controller_lookfor', ['uid' => $uid])->toString();
+    $rows[1] = $rates->bg;
+    $rows[2] = $rates->sg;
+    $rows[3] = $rates->bb;
+    $rows[4] = $rates->sb;
+    $rows[5] = Link::createFromRoute($name, 'zoular.rate_below_form', ['uid' => $uid])->toString();
+    return $rows;
   }
   
 }

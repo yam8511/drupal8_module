@@ -1,4 +1,16 @@
 
-setting rate:
+setting_rate:
   title: 'Set Rate'
   description: 'Allow access to set rate'
+
+look_below:
+  title: 'Look Other Data'
+  description: 'Allow access to look other data'
+
+look_rate:
+  title: 'Look Rate'
+  description: 'Allow access to look rate'
+
+create_user:
+  title: 'Create User'
+  description: 'Allow access to create below user'
