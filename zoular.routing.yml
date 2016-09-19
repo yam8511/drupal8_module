@@ -41,7 +41,8 @@ zoular.rate_form:
 zoular.rate_below_form:
   path: 'zoular/rate_below_form/{uid}'
   defaults:
-    _form: '\Drupal\zoular\Form\EditBelowForm'
+    _controller: '\Drupal\zoular\Controller\MyController::getRateForm'
     _title: '設定賠率'
   requirements:
     _permission: 'setting_rate'
+

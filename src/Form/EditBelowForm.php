@@ -19,15 +19,14 @@ class EditBelowForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'rate_form';
+    return 'edit_below_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
-  	$uid = $_GET['uid'];
-    $info = ['bg' => 0, 'sg' => 0, 'bb' => 0, 'sb' => 0];
+  public function buildForm(array $form, FormStateInterface $form_state, $uid = NULL) {
+  	$info = ['bg' => 0, 'sg' => 0, 'bb' => 0, 'sb' => 0];
     #嘗試取得資料庫資料
     $result = RateStorage::getRate($uid);
     if ($result) {
@@ -42,7 +41,7 @@ class EditBelowForm extends FormBase {
 
     $form['uid'] = [
     	 '#type' => 'hidden',
-    	 'value' => $uid,
+    	 '#default_value' => $uid,
     ];
 
     $form['bg'] = [
@@ -84,11 +83,6 @@ class EditBelowForm extends FormBase {
       '#value' => 'Save',
     ];
 
-    $form['actions']['syn'] = [
-      '#type' => 'submit',
-      '#value' => 'Syn'
-    ];
-
     return $form;
   }
 
@@ -105,11 +99,11 @@ class EditBelowForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Gather the current user so the new record has ownership.
     $uid = $form_state->getValue('uid');
-    if ($form_state->getValue('op') === 'Save') {
+    
       // Save the submitted entry.
       $entry = array(
         'uid' => $uid,
-        'name' => $account->getUsername(),
+        'name' => RelationStorage::getName($uid),
         'bg' => $form_state->getValue('bg'),
         'sg' => $form_state->getValue('sg'),
         'bb' => $form_state->getValue('bb'),
@@ -118,17 +112,6 @@ class EditBelowForm extends FormBase {
 
       RateStorage::update($entry);
       drupal_set_message(t('修改成功'));
-    }
-    elseif ($form_state->getValue('op') === 'Syn') {
-      $belows = RelationStorage::load(['up' => $uid]);
-      foreach ($belows as $below) {
-        RateStorage::delete(['uid' => $below->uid]);
-      }
-      drupal_set_message(t('同步成功'));
-    }
-    else {
-      drupal_set_message(t('操作失敗'));
-    }
   }
 
 }

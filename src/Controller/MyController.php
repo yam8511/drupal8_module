@@ -137,5 +137,10 @@ class MyController extends ControllerBase {
     $rows[5] = Link::createFromRoute($name, 'zoular.rate_below_form', ['uid' => $uid])->toString();
     return $rows;
   }
+
+  public function getRateForm($uid) {
+    $form = \Drupal::formBuilder()->getForm('Drupal\zoular\Form\EditBelowForm', $uid);
+    return $form;
+  }
   
 }
