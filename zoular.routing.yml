@@ -46,3 +46,11 @@ zoular.rate_below_form:
   requirements:
     _permission: 'setting_rate'
 
+zoular.add_below_form:
+  path: 'zoular/add_below_form'
+  defaults:
+    _form: '\Drupal\zoular\Form\AddBelowForm'
+    _title: '設定賠率'
+  requirements:
+    _permission: 'setting_rate'
+

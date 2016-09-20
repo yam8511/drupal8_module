@@ -134,7 +134,7 @@ class MyController extends ControllerBase {
     $rows[2] = $rates->sg;
     $rows[3] = $rates->bb;
     $rows[4] = $rates->sb;
-    $rows[5] = Link::createFromRoute($name, 'zoular.rate_below_form', ['uid' => $uid])->toString();
+    $rows[5] = Link::createFromRoute('設定', 'zoular.rate_below_form', ['uid' => $uid])->toString();
     return $rows;
   }
 

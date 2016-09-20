@@ -82,6 +82,11 @@ class EditBelowForm extends FormBase {
       '#type' => 'submit',
       '#value' => 'Save',
     ];
+    $form['actions']['delete'] = [
+      '#type' => 'submit',
+      '#value' => 'Delete',
+    ];
+
 
     return $form;
   }
@@ -100,6 +105,7 @@ class EditBelowForm extends FormBase {
     // Gather the current user so the new record has ownership.
     $uid = $form_state->getValue('uid');
     
+    if ($form_state->getValue('op') === 'Save') {
       // Save the submitted entry.
       $entry = array(
         'uid' => $uid,
@@ -112,6 +118,11 @@ class EditBelowForm extends FormBase {
 
       RateStorage::update($entry);
       drupal_set_message(t('修改成功'));
+    }
+    elseif ($form_state->getValue('op') === 'Delete') {
+      RelationStorage::delete(['uid' => $uid]);
+      drupal_set_message(t('刪除成功'));
+    }
   }
 
 }

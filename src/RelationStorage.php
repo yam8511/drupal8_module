@@ -89,6 +89,19 @@ class RelationStorage {
     return $result->name;
   }
 
+  public static function getUser($entry = array()) {
+    // Read all fields from the zoular_relation table.
+    $select = db_select('users_field_data', 'example');
+    $select->fields('example');
+
+    // Add each field and value as a condition to this query.
+    foreach ($entry as $field => $value) {
+      $select->condition($field, $value);
+    }
+    // Return the result in object format.
+    return $select->execute()->fetch();
+  }
+
   public static function isUpper($id, $parent_id) {
     // Look for Upper
     $table = db_select('zoular_relation', 'example');
